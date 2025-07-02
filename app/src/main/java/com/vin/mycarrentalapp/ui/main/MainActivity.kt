@@ -1,6 +1,5 @@
 package com.vin.mycarrentalapp.ui.main
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
@@ -9,7 +8,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import android.Manifest
+import android.content.Intent
 import com.vin.mycarrentalapp.R
+import com.vin.mycarrentalapp.communication.CommunicationManager
+import com.vin.mycarrentalapp.service.SpeedCheckService
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,15 +29,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Assume hardcoded user for this example
+        configureCustomer("customer1")
+
         val startButton = findViewById<Button>(R.id.btn_start)
         startButton.setOnClickListener {
          checkLocationPermission()
         }
     }
 
-    /*
-    Method to check location permission
-    */
+
+    /**
+     *  Method to check location permission
+     */
     private fun checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
@@ -45,11 +51,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /*
-    Method to start the speed check service
-    */
+    /**
+     *   Method to start the speed check service
+     */
     private fun startSpeedChecking(){
-        //val speedCheckServiceIntent = Intent(this,"")
-        //startService(speedCheckServiceIntent)
+        val speedCheckServiceIntent = Intent(this,SpeedCheckService::class.java)
+        startService(speedCheckServiceIntent)
+    }
+
+    /**
+     * Method to configure speed for a customer - hardcoded for testing
+     */
+    fun configureCustomer(customerId: String) {
+        SpeedCheckService.maxSpeedLimit = 90.0
+        CommunicationManager.currentChannel = CommunicationManager.Channel.AWS
     }
 }
